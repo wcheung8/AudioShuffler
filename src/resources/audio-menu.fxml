@@ -3,8 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-         prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.162"
+<TabPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+         prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.162"
          xmlns:fx="http://javafx.com/fxml/1" fx:controller="menuController">
     <tabs>
         <Tab text="Music">
@@ -18,7 +18,7 @@
                                 text="Play/Pause"/>
                         <Button layoutX="394.0" layoutY="310.0" mnemonicParsing="false" onAction="#handleNextPress"
                                 text="Next"/>
-                        <Text layoutX="257.0" layoutY="254.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                        <Text fx:id="current" layoutX="257.0" layoutY="254.0" strokeType="OUTSIDE" strokeWidth="0.0"
                               text="Current Song"/>
                         <ListView fx:id="song_list" layoutX="45.0" layoutY="23.0" prefHeight="200.0" prefWidth="511.0"/>
                     </children>
@@ -34,27 +34,35 @@
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <Slider fx:id="volume" blockIncrement="0.2" layoutX="50.0" layoutY="60.0" majorTickUnit="1.0"
+                        <Slider fx:id="volume" blockIncrement="0.2" layoutX="53.0" layoutY="40.0" majorTickUnit="1.0"
                                 max="1.0" minorTickCount="9" prefHeight="45.0" prefWidth="500.0" showTickLabels="true"
                                 showTickMarks="true" value="0.5"/>
-                        <Slider fx:id="playrate" layoutX="50.0" layoutY="141.0" majorTickUnit="1.0" max="2.0"
+                        <Slider fx:id="playrate" layoutX="53.0" layoutY="100.0" majorTickUnit="1.0" max="2.0"
                                 minorTickCount="4" prefHeight="18.0" prefWidth="501.0" showTickLabels="true"
                                 showTickMarks="true" value="1.0"/>
-                        <Text layoutX="275.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume"/>
-                        <Text layoutX="274.0" layoutY="121.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Playrate"/>
-                        <Text fx:id="playrate_text" layoutX="293.0" layoutY="138.0" strokeType="OUTSIDE"
-                              strokeWidth="0.0"
-                              text="1.0">
+                        <Text layoutX="277.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume"/>
+                        <Text layoutX="277.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Playrate"/>
+                        <Text fx:id="playrate_text" layoutX="295.0" layoutY="97.0" strokeType="OUTSIDE"
+                              strokeWidth="0.0" text="1.0">
                             <font>
                                 <Font size="11.0"/>
                             </font>
                         </Text>
-                        <Text fx:id="volume_text" layoutX="293.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                        <Text fx:id="volume_text" layoutX="295.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0"
                               text="0.5">
                             <font>
                                 <Font size="11.0"/>
                             </font>
                         </Text>
+                        <TableView fx:id="action_list" layoutX="55.0" layoutY="145.0" prefHeight="155.0"
+                                   prefWidth="495.0">
+                            <columns>
+                                <TableColumn fx:id="action" prefWidth="248.0" text="Action"/>
+                                <TableColumn fx:id="keybind" prefWidth="246.0" text="Keybind"/>
+                            </columns>
+                        </TableView>
+                        <Button onAction="#handleBind" layoutX="278.0" layoutY="316.0" mnemonicParsing="false"
+                                text="Bind"/>
                     </children>
                 </AnchorPane>
             </content>

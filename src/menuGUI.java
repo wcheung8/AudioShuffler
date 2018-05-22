@@ -21,7 +21,7 @@ public class menuGUI extends Application {
         Parent root = loader.load();
 
         //Now we have access to getController() through the instance... don't forget the type cast
-        controller = (menuController) loader.getController();
+        controller = loader.getController();
 
         mainStage = stage;
         Scene scene = new Scene(root);

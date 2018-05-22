@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,56 +17,53 @@ import java.util.Properties;
  */
 public class HotKeyInterface extends JFrame implements HotkeyListener, IntellitypeListener {
 
-    public final int NEXT = 0;
-    public final int PREV = 1;
-    public final int PAUSE = 2;
-    public final int QUIT = 3;
 
     public static Properties prop = new Properties();
 
-    //    public String[] methods = {"NEXT", "PREV", "PAUSE", "QUIT"};
-    public static String[] methods = {"NEXT", "PREV", "PAUSE", "QUIT", "VOLUME_UP", "VOLUME_DOWN", "RATE_UP", "RATE_DOWN"};
-    public static Map<String, Integer> mapping = new HashMap<>();
+    public static ArrayList<Action> actions = new ArrayList<Action>();
+    public static Map<Integer, Action> idToAction = new HashMap<>();
+    public static Map<String, Action> keyToAction = new HashMap<>();
 
     public HotKeyInterface() {
 
 
         loadSettings();
+
         // initialize hotkeys based on properties file
-        for (int i = 0; i < methods.length; i++) {
-            int modifier = Integer.parseInt(prop.getProperty(methods[i] + "_MODIFIER"));
-            int keycode = Integer.parseInt(prop.getProperty(methods[i] + "_KEYCODE"));
-            JIntellitype.getInstance().registerHotKey(i, modifier, keycode);
-            mapping.put(methods[i], i);
-        }
+        actions.add(new Action("NEXT", () -> {
+            player.next();
+        }));
+        actions.add(new Action("PREV", () -> {
+            player.prev();
+        }));
+        actions.add(new Action("PAUSE", () -> {
+            player.pause();
+        }));
+        actions.add(new Action("QUIT", () -> {
+            player.quit();
+        }));
+        actions.add(new Action("VOLUME_UP", () -> {
+            player.incrementVolume(0.1);
+        }));
+        actions.add(new Action("VOLUME_DOWN", () -> {
+            player.incrementVolume(-0.1);
+        }));
+        actions.add(new Action("PLAYRATE_UP", () -> {
+            player.incrementPlayrate(0.2);
+        }));
+        actions.add(new Action("PLAYRATE_DOWN", () -> {
+            player.incrementPlayrate(-0.2);
+        }));
 
         // set incrementVolume and incrementPlayrate
         player.playrate = Double.parseDouble(prop.getProperty("PLAYRATE"));
         player.volume = Double.parseDouble(prop.getProperty("VOLUME"));
 
-        saveSettings();
-
     }
 
     public void onHotKey(int aIdentifier) {
-        if (aIdentifier == mapping.get("NEXT")) {
-            player.next();
-        } else if (aIdentifier == mapping.get("PREV")) {
-            player.prev();
-        } else if (aIdentifier == mapping.get("PAUSE")) {
-            player.pause();
-        } else if (aIdentifier == mapping.get("QUIT")) {
-            JIntellitype.getInstance().cleanUp();
-            player.quit();
-        } else if (aIdentifier == mapping.get("VOLUME_UP")) {
-            player.incrementVolume(0.05);
-        } else if (aIdentifier == mapping.get("VOLUME_DOWN")) {
-            player.incrementVolume(-0.05);
-        } else if (aIdentifier == mapping.get("RATE_UP")) {
-            player.incrementPlayrate(0.05);
-        } else if (aIdentifier == mapping.get("RATE_DOWN")) {
-            player.incrementPlayrate(-0.05);
-        }
+        System.out.println(idToAction.get(aIdentifier).name);
+        idToAction.get(aIdentifier).act.run();
     }
 
     public void onIntellitype(int aCommand) {
@@ -78,29 +76,14 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
         } catch (FileNotFoundException e) {
             /* set defaults */
 
-            prop.setProperty("NEXT_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("NEXT_KEYCODE", "" + 191);
-
-            prop.setProperty("PREV_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("PREV_KEYCODE", "" + 190);
-
-            prop.setProperty("PAUSE_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("PAUSE_KEYCODE", "" + 188);
-
-            prop.setProperty("QUIT_MODIFIER", "" + 0);
-            prop.setProperty("QUIT_KEYCODE", "" + 112);
-
-            prop.setProperty("VOLUME_UP_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("VOLUME_UP_KEYCODE", "" + 38);
-
-            prop.setProperty("VOLUME_DOWN_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("VOLUME_DOWN_KEYCODE", "" + 40);
-
-            prop.setProperty("RATE_UP_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("RATE_UP_KEYCODE", "" + 39);
-
-            prop.setProperty("RATE_DOWN_MODIFIER", "" + JIntellitype.MOD_CONTROL);
-            prop.setProperty("RATE_DOWN_KEYCODE", "" + 37);
+            prop.setProperty("NEXT", "CTRL+SLASH");
+            prop.setProperty("PREV", "CTRL+PERIOD");
+            prop.setProperty("PAUSE", "CTRL+COMMA");
+            prop.setProperty("QUIT", "F1");
+            prop.setProperty("VOLUME_UP", "CTRL+UP");
+            prop.setProperty("VOLUME_DOWN", "CTRL+DOWN");
+            prop.setProperty("PLAYRATE_UP", "CTRL+RIGHT");
+            prop.setProperty("PLAYRATE_DOWN", "CTRL+LEFT");
 
             prop.setProperty("VOLUME", "" + 0.5);
             prop.setProperty("PLAYRATE", "" + 1.0);
@@ -121,15 +104,6 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
         }
     }
 
-
-    public void setHotkey(int method, int modifier, int keycode) {
-        JIntellitype.getInstance().unregisterHotKey(method);
-        JIntellitype.getInstance().registerHotKey(method, modifier, keycode);
-    }
-
-    /**
-     * Initialize the JInitellitype library making sure the DLL is located.
-     */
     public void initJIntellitype() {
         try {
             JIntellitype.getInstance().addHotKeyListener(this);
@@ -138,23 +112,53 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
             System.out.println("Either you are not on Windows, or there is a problem with the JIntellitype library!");
         }
     }
-/*
-    public void registerHotkey(Object hotkeyId, int modifiers, int keyCode) {
-        if (!initialized) {
-            return;
-        }
+
+    // TODO recompile jintellitype to have corrected keycodes (PERIOD)
+    public static void bind(Action a, String hotkey) {
         try {
-            int id = getId(hotkeyId);
-            int mod = getModFromModifiers(modifiers);
-            // Remove previously under this id registered hotkey (if there is
-            // any)
-            JIntellitype.getInstance().unregisterHotKey(id);
-            LOGGER.info("[Global Hotkeys] Trying to register hotkey: " + id + "/" + mod + "/" + keyCode);
-            JIntellitype.getInstance().registerHotKey(id, mod, keyCode);
-            hotkeys.put(id, hotkeyId);
-        } catch (JIntellitypeException ex) {
-            LOGGER.info("[Global Hotkeys] Couldn't register hotkey: " + ex);
+            if (keyToAction.containsKey(hotkey)) {
+                Action r = keyToAction.get(hotkey);
+                unbind(r);
+            }
+            JIntellitype.getInstance().unregisterHotKey(a.id);
+            JIntellitype.getInstance().registerHotKey(a.id, hotkey);
+            prop.setProperty(a.name, hotkey);
+
+            idToAction.put(a.id, a);
+            keyToAction.put(hotkey, a);
+            a.keybind = hotkey;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
-*/
+
+    public static void unbind(Action s) {
+
+        if (s.keybind.equals(""))
+            return;
+
+        prop.remove(s.name);
+        keyToAction.remove(s.keybind);
+        idToAction.remove(s.id);
+        JIntellitype.getInstance().unregisterHotKey(s.id);
+        s.keybind = "";
+
+        saveSettings();
+
+    }
+
+    public static void bindAll() {
+        for (Action s : HotKeyInterface.actions) {
+            if (!s.keybind.equals(""))
+                JIntellitype.getInstance().registerHotKey(s.id, s.keybind);
+        }
+    }
+
+    public static void unbindAll() {
+        for (Action s : HotKeyInterface.actions) {
+            JIntellitype.getInstance().unregisterHotKey(s.id);
+        }
+    }
+
 }

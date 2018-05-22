@@ -145,6 +145,7 @@ public class player {
         // update rate and incrementVolume
         current.media.setRate(playrate);
         current.media.setVolume(volume);
+//        menuGUI.controller.setTitle(current.title);
 
         // update tooltips and slider bar
         trayGUI.trayIcon.setToolTip("Now Playing: " + current.title);
@@ -173,9 +174,10 @@ public class player {
         // switch to next
         current = songs.get(getPrevTrack());
 
-        // update rate and incrementVolume
+        // update rate and incrementVolume and title
         current.media.setRate(playrate);
         current.media.setVolume(volume);
+        menuGUI.controller.setTitle(current.title);
 
         // update tooltips and slider bar
         trayGUI.trayIcon.setToolTip("Now Playing: " + current.title);
@@ -200,6 +202,7 @@ public class player {
             playrate += change;
         current.media.setRate(playrate);
         HotKeyInterface.saveSettings();
+        menuGUI.controller.refresh();
     }
 
     public static void incrementVolume(double change) {
@@ -207,6 +210,7 @@ public class player {
             volume += change;
         current.media.setVolume(volume);
         HotKeyInterface.saveSettings();
+        menuGUI.controller.refresh();
     }
 
     public static void setPlayrate(double newValue) {

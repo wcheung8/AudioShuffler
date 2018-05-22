@@ -4,7 +4,7 @@ Just place and run the .jar file in the directory with your .mp3/.m4a files and 
 
 # Features
 
-- [ ] Customizable hot-keys for music control
+- [x] Customizable hot-keys for music control
 - [X] Volume and playrate control
 - [ ] Shuffled and manual song ordering
 - [ ] Playlists
