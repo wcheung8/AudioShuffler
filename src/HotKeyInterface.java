@@ -121,7 +121,10 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
                 unbind(r);
             }
             JIntellitype.getInstance().unregisterHotKey(a.id);
-            JIntellitype.getInstance().registerHotKey(a.id, hotkey);
+            if (hotkey.contains("PERIOD"))
+                JIntellitype.getInstance().registerHotKey(a.id, JIntellitype.MOD_CONTROL, 190);
+            else
+                JIntellitype.getInstance().registerHotKey(a.id, hotkey);
             prop.setProperty(a.name, hotkey);
 
             idToAction.put(a.id, a);
