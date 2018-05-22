@@ -72,10 +72,10 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
 
     public static void loadSettings() {
         try {
-            prop.load(new FileInputStream("./shuffler-settings.ini"));
+            prop.load(new FileInputStream("./audio-settings.ini"));
         } catch (FileNotFoundException e) {
-            /* set defaults */
 
+            /* set defaults */
             prop.setProperty("NEXT", "CTRL+SLASH");
             prop.setProperty("PREV", "CTRL+PERIOD");
             prop.setProperty("PAUSE", "CTRL+COMMA");
@@ -98,7 +98,7 @@ public class HotKeyInterface extends JFrame implements HotkeyListener, Intellity
         try {
             prop.setProperty("VOLUME", "" + player.volume);
             prop.setProperty("PLAYRATE", "" + player.playrate);
-            prop.store(new FileOutputStream("./shuffler-settings.ini"), "AudioShuffler Settings");
+            prop.store(new FileOutputStream("./audio-settings.ini"), "AudioShuffler Settings");
         } catch (Exception e) {
             e.printStackTrace();
         }
